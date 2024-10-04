@@ -11,9 +11,16 @@ namespace MStar.Repository
         }
 
         public DbSet<Mercadoria> Mercadoria { get; set; }
+        public DbSet<TipoMercadoria> TipoMercadoria { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //Mapeamento de TipoMercadoria
+            modelBuilder.Entity<TipoMercadoria>().HasKey(e => e.Id);
+            modelBuilder.Entity<TipoMercadoria>().Property(e => e.Id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<TipoMercadoria>().ToTable("TipoMercadoria");
+            modelBuilder.Entity<TipoMercadoria>().Property(x => x.Tipo).HasColumnName("Tipo");
+
             //Mapeamento de Mercadoria
             modelBuilder.Entity<Mercadoria>().HasKey(k => k.Id);
             modelBuilder.Entity<Mercadoria>().Property(e => e.Id).ValueGeneratedOnAdd();
@@ -22,7 +29,15 @@ namespace MStar.Repository
             modelBuilder.Entity<Mercadoria>().Property(x => x.Descricao).HasColumnName("Descricao");
             modelBuilder.Entity<Mercadoria>().Property(x => x.Nome).HasColumnName("Nome");
             modelBuilder.Entity<Mercadoria>().Property(x => x.DataCriacao).HasColumnName("DataCriacao");
-            modelBuilder.Entity<Mercadoria>().Property(x => x.TipoMercadoria).HasColumnName("TipoMercadoria");
+            modelBuilder.Entity<Mercadoria>().Property(x => x.TipoMercadoriaId).HasColumnName("TipoMercadoriaId");
+            //modelBuilder.Entity<Mercadoria>()
+            //   .HasOne(x => x.TipoMercadoria)
+            //   .WithOne()
+            //   .HasForeignKey<TipoMercadoria>(e => e.Id)
+            //   .HasPrincipalKey<Mercadoria>(c => c.TipoMercadoriaId)
+            //   .OnDelete(DeleteBehavior.ClientNoAction);
+            modelBuilder.Entity<Mercadoria>().HasOne(x => x.TipoMercadoria).WithOne().HasForeignKey<TipoMercadoria>(x => x.Id).HasPrincipalKey<Mercadoria>(c => c.TipoMercadoriaId).OnDelete(DeleteBehavior.ClientNoAction);
+            modelBuilder.Entity<Mercadoria>().Navigation(x => x.TipoMercadoria).AutoInclude();
         }
     }
 }
