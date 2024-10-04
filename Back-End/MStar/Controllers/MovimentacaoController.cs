@@ -10,12 +10,10 @@ namespace MStar.Controllers
     [Route("api/v1/Movimentação")]
     public class MovimentacaoController : ControllerBase
     {
-        private readonly ConnectionContext _context;
         private readonly IMovimentacaoService _movimentacaoService;
 
-        public MovimentacaoController(ConnectionContext context, IMovimentacaoService movimentacaoService)
+        public MovimentacaoController(IMovimentacaoService movimentacaoService)
         {
-            _context = context;
             _movimentacaoService = movimentacaoService ?? throw new ArgumentNullException(nameof(movimentacaoService));
         }
 

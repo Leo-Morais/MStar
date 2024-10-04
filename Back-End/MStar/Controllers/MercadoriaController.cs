@@ -11,11 +11,9 @@ namespace MStar.Controllers
     public class MercadoriaController : ControllerBase
     {
         private readonly IMercadoriaService _mercadoriaService;
-        private readonly ConnectionContext _context;
 
-        public MercadoriaController(IMercadoriaService mercadoriaService, ConnectionContext connectionContext)
+        public MercadoriaController(IMercadoriaService mercadoriaService)
         {
-            _context = connectionContext;
             _mercadoriaService = mercadoriaService ?? throw new ArgumentNullException(nameof(mercadoriaService));
         }
         [HttpPost]

@@ -10,12 +10,10 @@ namespace MStar.Controllers
     [Route("api/v1/TipoMercadoria")]
     public class TipoMercadoriaController : ControllerBase
     {
-        private readonly ConnectionContext _context;
         private readonly ITipoMercadoriaService _tipoService;
 
-        public TipoMercadoriaController(ITipoMercadoriaService _tipoService, ConnectionContext connectionContext)
+        public TipoMercadoriaController(ITipoMercadoriaService _tipoService)
         {
-            _context = connectionContext;
             this._tipoService = _tipoService ?? throw new ArgumentNullException(nameof(_tipoService));
         }
 
