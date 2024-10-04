@@ -28,6 +28,7 @@ CREATE TABLE Movimentacao(
 );
 
 CREATE TABLE Estoque(
+	Id INT PRIMARY KEY IDENTITY(1,1),
 	IdMercadoria INT NOT NULL,
 	Quantidade INT NOT NULL,
 	DataAtualizacao DATETIME NOT NULL,
