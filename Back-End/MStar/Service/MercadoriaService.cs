@@ -10,21 +10,24 @@ namespace MStar.Service
     public class MercadoriaService : IMercadoriaService
     {
         private readonly ConnectionContext _context;
+        private readonly ITipoMercadoriaService _tipoService;
 
-        public MercadoriaService(ConnectionContext context)
+        public MercadoriaService(ConnectionContext context, ITipoMercadoriaService tipoService)
         {
             _context = context;
+            _tipoService = tipoService;
         }
 
 
         public async Task<Mercadoria> Add(MercadoriaDTO mercadoriaDTO)
         {
+            var tipoMercadoria = await _tipoService.GetById(mercadoriaDTO.TipoMercadoriaId);
             var mercadoria = new Mercadoria()
             {
                 Nome = mercadoriaDTO.Nome,
                 Descricao = mercadoriaDTO.Descricao,
                 Fabricante = mercadoriaDTO.Fabricante,
-                TipoMercadoria = mercadoriaDTO.TipoMercadoria,
+                TipoMercadoriaId = mercadoriaDTO.TipoMercadoriaId,
                 DataCriacao = DateTime.Now
             };
             await _context.Mercadoria.AddAsync(mercadoria);
@@ -75,7 +78,6 @@ namespace MStar.Service
             {
                 throw new IdNotFoundException($"Mercadoria com o Id:{id} não encontrada.");
             }
-            mercadoriaEncontrada.TipoMercadoria = mercadoriaDTO.TipoMercadoria;
             mercadoriaEncontrada.Fabricante = mercadoriaDTO.Fabricante;
             mercadoriaEncontrada.Descricao = mercadoriaDTO.Descricao;
             mercadoriaEncontrada.Nome = mercadoriaDTO.Nome;
