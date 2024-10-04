@@ -13,6 +13,7 @@ namespace MStar.Repository
         public DbSet<Mercadoria> Mercadoria { get; set; }
         public DbSet<TipoMercadoria> TipoMercadoria { get; set; }
         public DbSet<Movimentacao> Movimentacao { get; set; }
+        public DbSet<Estoque> Estoque {  get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -49,6 +50,18 @@ namespace MStar.Repository
                 .HasForeignKey<Mercadoria>(x => x.Id).HasPrincipalKey<Movimentacao>(c => c.IdMercadoria)
                 .OnDelete(DeleteBehavior.ClientNoAction);
             modelBuilder.Entity<Movimentacao>().Navigation(x => x.Mercadoria).AutoInclude();
+
+
+            //Mapeamento de Estoque
+            modelBuilder.Entity<Estoque>().HasKey(x => x.Id);
+            modelBuilder.Entity<Estoque>().Property(x => x.Id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Estoque>().ToTable("Estoque");
+            modelBuilder.Entity<Estoque>().Property(x => x.Quantidade).HasColumnName("Quantidade");
+            modelBuilder.Entity<Estoque>().Property(x => x.DataAtualizacao).HasColumnName("DataAtualizacao");
+            modelBuilder.Entity<Estoque>().HasOne(x => x.Mercadoria).WithOne()
+                .HasForeignKey<Mercadoria>(x => x.Id).HasPrincipalKey<Estoque>(c => c.IdMercadoria)
+                .OnDelete(DeleteBehavior.ClientNoAction);
+            modelBuilder.Entity<Estoque>().Navigation(x => x.Mercadoria).AutoInclude();
         }
     }
 }

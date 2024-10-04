@@ -19,6 +19,7 @@ builder.Services.AddDbContext<ConnectionContext>(options =>
 builder.Services.AddTransient<IMercadoriaService, MercadoriaService>();
 builder.Services.AddTransient<ITipoMercadoriaService, TipoMercadoriaService>();
 builder.Services.AddTransient<IMovimentacaoService, MovimentacaoService>();
+builder.Services.AddTransient<IEstoqueService, EstoqueService>();
 
 var app = builder.Build();
 
