@@ -41,7 +41,7 @@ namespace MStar.Service
             var mercadoria = await _context.Mercadoria.FindAsync(id);
             if (mercadoria == null)
             {
-                throw new IdentityNotMappedException($"Mercadoria com Id: {id} não encontrado.");
+                throw new IdNotFoundException($"Mercadoria com Id: {id} não encontrado.");
             }
             _context.Mercadoria.Remove(mercadoria);
             await _context.SaveChangesAsync();
