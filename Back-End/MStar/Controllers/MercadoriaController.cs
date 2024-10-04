@@ -32,6 +32,13 @@ namespace MStar.Controllers
             return Ok(mercadoria);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var mercadoria = await _mercadoriaService.GetById(id);
+            return Ok(mercadoria);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -45,8 +52,8 @@ namespace MStar.Controllers
             try
             {
 
-                var updateModelo = await _mercadoriaService.Update(id, mercadoriaDTO);
-                return Ok(updateModelo);
+                var updateMercadoria = await _mercadoriaService.Update(id, mercadoriaDTO);
+                return Ok(updateMercadoria);
 
             }
             catch (IdNotFoundException infe)
