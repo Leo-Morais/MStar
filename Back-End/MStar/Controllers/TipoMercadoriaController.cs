@@ -18,7 +18,7 @@ namespace MStar.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddAsync([FromForm] TipoMercadoriaDTO tipoMercadoriaDTO)
+        public async Task<IActionResult> AddAsync(TipoMercadoriaDTO tipoMercadoriaDTO)
         {
             var tipo = await _tipoService.Add(tipoMercadoriaDTO);
             return Ok(tipo);

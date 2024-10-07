@@ -17,7 +17,7 @@ namespace MStar.Controllers
             _mercadoriaService = mercadoriaService ?? throw new ArgumentNullException(nameof(mercadoriaService));
         }
         [HttpPost]
-        public async Task<IActionResult> AddAsync([FromForm] MercadoriaDTO mercadoriaDTO)
+        public async Task<IActionResult> AddAsync(MercadoriaDTO mercadoriaDTO)
         {
             var mercadoria = await _mercadoriaService.Add(mercadoriaDTO);
             return Ok(mercadoria);

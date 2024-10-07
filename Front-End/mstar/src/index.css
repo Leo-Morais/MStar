@@ -1,0 +1,21 @@
+/* src/index.css */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden; /* Impede rolagem lateral */
+  box-sizing: border-box;
+}
+
+#root {
+  width: 100%;
+}
+
+.App {
+  width: 100%; /* Garante que a aplicação ocupe toda a largura */
+  overflow-x: hidden; /* Evita rolagem lateral indesejada */
+}
+
+.dropdownContent a:hover {
+  background-color: #d3d3d3;
+}

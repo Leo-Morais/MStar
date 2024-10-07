@@ -18,7 +18,7 @@ namespace MStar.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddAsync([FromForm] MovimentacaoDTO movimentacaoDTO)
+        public async Task<IActionResult> AddAsync(MovimentacaoDTO movimentacaoDTO)
         {
             var movimentacao = await _movimentacaoService.Add(movimentacaoDTO);
             return Ok(movimentacao);
