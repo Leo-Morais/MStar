@@ -10,6 +10,8 @@ import Container from './components/layout/Container';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Movimentacao from './components/pages/Movimentacao';
+import MercadoriaCadastro from './components/pages/MercadoriaCadastro';
+import MovimentacaoCadastro from './components/pages/MovimentacaoCadastro';
 
 
 
@@ -23,9 +25,11 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/mercadoria' element={<Mercadoria />} />
           <Route path='/tipoMercadoria' element={<TipoMercadoria />} />
-          <Route path='/tipoMercadoriaCadastro' element={<TipoMercadoriaCadastro />} />
           <Route path='/estoque' element={<Estoque />} />
           <Route path='/movimentacao' element={<Movimentacao />} />
+          <Route path='/tipoMercadoriaCadastro' element={<TipoMercadoriaCadastro />} />
+          <Route path='/mercadoriaCadastro' element={<MercadoriaCadastro />} />
+          <Route path='/movimentacaoCadastro' element={<MovimentacaoCadastro />} />
         </Routes>
       </Container>
       <Footer />    

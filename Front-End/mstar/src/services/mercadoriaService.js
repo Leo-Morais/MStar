@@ -25,15 +25,13 @@ const mercadoriaService = {
   },
 
   // Buscar todas as mercadorias
-  getAll: async () => {
-    try {
-      const response = await axios.get(`${API_URL}/getAll`);
-      return response.data;
-    } catch (error) {
-      console.error("Erro ao buscar mercadorias", error);
-      throw error;
+  async getAll() {
+    const response = await fetch("https://localhost:7116/api/v1/Mercadoria");
+    if (!response.ok) {
+        throw new Error("Erro ao buscar mercadorias");
     }
-  },
+    return await response.json();
+},
 
   // Buscar mercadoria pelo ID
   getById: async (id) => {

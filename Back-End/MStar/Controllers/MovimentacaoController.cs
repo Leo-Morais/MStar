@@ -7,7 +7,7 @@ using MStar.Service;
 namespace MStar.Controllers
 {
     [ApiController]
-    [Route("api/v1/Movimentação")]
+    [Route("api/v1/Movimentacao")]
     public class MovimentacaoController : ControllerBase
     {
         private readonly IMovimentacaoService _movimentacaoService;

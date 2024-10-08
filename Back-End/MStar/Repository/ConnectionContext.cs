@@ -32,9 +32,9 @@ namespace MStar.Repository
             modelBuilder.Entity<Mercadoria>().Property(x => x.Nome).HasColumnName("Nome");
             modelBuilder.Entity<Mercadoria>().Property(x => x.DataCriacao).HasColumnName("DataCriacao");
             modelBuilder.Entity<Mercadoria>().Property(x => x.TipoMercadoriaId).HasColumnName("TipoMercadoriaId");
-            modelBuilder.Entity<Mercadoria>().HasOne(x => x.TipoMercadoria).WithOne()
-                .HasForeignKey<TipoMercadoria>(x => x.Id).HasPrincipalKey<Mercadoria>(c => c.TipoMercadoriaId)
-                .OnDelete(DeleteBehavior.ClientNoAction);
+            modelBuilder.Entity<Mercadoria>().HasOne(x => x.TipoMercadoria).WithMany()
+            .HasForeignKey(x => x.TipoMercadoriaId)
+            .OnDelete(DeleteBehavior.ClientNoAction);
             modelBuilder.Entity<Mercadoria>().Navigation(x => x.TipoMercadoria).AutoInclude();
 
             //Mapeamento de Movimentação
@@ -46,9 +46,11 @@ namespace MStar.Repository
             modelBuilder.Entity<Movimentacao>().Property(x => x.TipoMovimentacao).HasColumnName("TipoMovimentacao");
             modelBuilder.Entity<Movimentacao>().Property(x => x.DataCriacao).HasColumnName("DataCriacao");
             modelBuilder.Entity<Movimentacao>().Property(x => x.IdMercadoria).HasColumnName("IdMercadoria");
-            modelBuilder.Entity<Movimentacao>().HasOne(x => x.Mercadoria).WithOne()
-                .HasForeignKey<Mercadoria>(x => x.Id).HasPrincipalKey<Movimentacao>(c => c.IdMercadoria)
-                .OnDelete(DeleteBehavior.ClientNoAction);
+            modelBuilder.Entity<Movimentacao>()
+    .HasOne(x => x.Mercadoria)
+    .WithMany() // Assume que uma Mercadoria pode ter várias Movimentações
+    .HasForeignKey(x => x.IdMercadoria) // Aqui você especifica a FK
+    .OnDelete(DeleteBehavior.ClientNoAction);
             modelBuilder.Entity<Movimentacao>().Navigation(x => x.Mercadoria).AutoInclude();
 
 

@@ -9,9 +9,9 @@ function Home(){
             
             <div className={styles.button_group}>
                 <LinkButton to="/tipoMercadoriaCadastro" text="TipoMercadoria"/>
-                <LinkButton to="/mercadoria" text="Mercadoria"/>
+                <LinkButton to="/mercadoriaCadastro" text="Mercadoria"/>
                 <LinkButton to="/estoque" text="Estoque"/>
-                <LinkButton to="/movimentacao" text="Movimentação"/>
+                <LinkButton to="/movimentacaoCadastro" text="Movimentação"/>
             </div>
         </section>
     )

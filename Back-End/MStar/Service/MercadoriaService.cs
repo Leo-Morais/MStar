@@ -55,7 +55,7 @@ namespace MStar.Service
         public async Task<Mercadoria> GetById(int id)
         {
             var mercadoriaEncontrada = await _context.Mercadoria.FindAsync(id);
-            if(mercadoriaEncontrada == null)
+            if (mercadoriaEncontrada == null)
             {
                 throw new IdNotFoundException($"Mercadoria com Id: {id} não encontrado.");
             }
@@ -64,26 +64,34 @@ namespace MStar.Service
 
         public async Task<Mercadoria> Update(int id, MercadoriaDTO mercadoriaDTO)
         {
-            if(id <= 0)
+            if (id <= 0)
             {
                 throw new IdNotFoundException("Id inválido");
             }
-            if(mercadoriaDTO == null)
+            if (mercadoriaDTO == null)
             {
                 throw new WrongPropertyException("Existe campo nulo.");
             }
 
             var mercadoriaEncontrada = await _context.Mercadoria.FindAsync(id);
-            if(mercadoriaEncontrada == null)
+            if (mercadoriaEncontrada == null)
             {
                 throw new IdNotFoundException($"Mercadoria com o Id:{id} não encontrada.");
             }
+
+            var tipoMercadoria = await _tipoService.GetById(mercadoriaDTO.TipoMercadoriaId);
+            if (tipoMercadoria == null)
+            {
+                throw new IdNotFoundException($"Tipo de Mercadoria com o Id:{mercadoriaDTO.TipoMercadoriaId} não encontrado.");
+            }
+
             mercadoriaEncontrada.Fabricante = mercadoriaDTO.Fabricante;
             mercadoriaEncontrada.Descricao = mercadoriaDTO.Descricao;
             mercadoriaEncontrada.Nome = mercadoriaDTO.Nome;
+            mercadoriaEncontrada.TipoMercadoriaId = mercadoriaDTO.TipoMercadoriaId;
+
             await _context.SaveChangesAsync();
             return mercadoriaEncontrada;
-
         }
     }
 }
