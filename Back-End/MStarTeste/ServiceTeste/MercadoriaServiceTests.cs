@@ -6,9 +6,8 @@ using MStar.Repository;
 using MStar.Service;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace MStarTeste.ServiceTeste
 {
@@ -30,17 +29,17 @@ namespace MStarTeste.ServiceTeste
         public async Task MercadoriaService_Add_ReturnsSuccess()
         {
             // Arrange
-
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
             var tipoService = new TipoMercadoriaService(context);
             var mercadoriaService = new MercadoriaService(context, tipoService);
-            
+
             var tipo = new TipoMercadoria()
             {
                 Id = 1,
-                Tipo = "Eletronico"
+                Tipo = "Eletrônico"
             };
             context.Add(tipo);
+            await context.SaveChangesAsync(); // Save changes to ensure TipoMercadoria is persisted
 
             var mercadoriaDTO = new MercadoriaDTO
             {
@@ -50,20 +49,18 @@ namespace MStarTeste.ServiceTeste
                 TipoMercadoriaId = 1
             };
 
-
             // Act
             var result = await mercadoriaService.Add(mercadoriaDTO);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(mercadoriaDTO.Nome, result.Nome);
+            result.Should().NotBeNull();
+            result.Nome.Should().Be(mercadoriaDTO.Nome);
         }
 
         [Fact]
-        public async Task MercadoriaService_Delete()
+        public async Task MercadoriaService_Delete_Success()
         {
             // Arrange
-
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
             var tipoService = new TipoMercadoriaService(context);
             var mercadoriaService = new MercadoriaService(context, tipoService);
@@ -71,9 +68,10 @@ namespace MStarTeste.ServiceTeste
             var tipo = new TipoMercadoria()
             {
                 Id = 1,
-                Tipo = "Eletronico"
+                Tipo = "Eletrônico"
             };
             context.Add(tipo);
+            await context.SaveChangesAsync();
 
             var mercadoriaDTO = new MercadoriaDTO
             {
@@ -83,28 +81,31 @@ namespace MStarTeste.ServiceTeste
                 TipoMercadoriaId = 1
             };
 
+            var addedMercadoria = await mercadoriaService.Add(mercadoriaDTO);
 
             // Act
-            var result = await mercadoriaService.Add(mercadoriaDTO);
-            await context.SaveChangesAsync();
-
-            await mercadoriaService.Delete(result.Id);
-            await context.SaveChangesAsync();
+            await mercadoriaService.Delete(addedMercadoria.Id);
 
             // Assert
-            var mercadoria = await context.Mercadoria.ToListAsync();
-            Assert.DoesNotContain(mercadoria, m => m.Descricao == result.Descricao);
+            var mercadoria = await context.Mercadoria.FindAsync(addedMercadoria.Id);
+            mercadoria.Should().BeNull(); // Verifica se a mercadoria foi removida
         }
 
         [Fact]
-        public async Task MercadoriaService_Update_Return_mercadoriaEncontrada()
+        public async Task MercadoriaService_Update_ReturnsUpdatedMercadoria()
         {
-
             // Arrange
-
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
             var tipoService = new TipoMercadoriaService(context);
             var mercadoriaService = new MercadoriaService(context, tipoService);
+
+            var tipo = new TipoMercadoria()
+            {
+                Id = 1,
+                Tipo = "Eletrônico"
+            };
+            context.Add(tipo);
+            await context.SaveChangesAsync();
 
             var mercadoria = new Mercadoria
             {
@@ -115,39 +116,43 @@ namespace MStarTeste.ServiceTeste
                 TipoMercadoriaId = 1,
                 DataCriacao = DateTime.Now
             };
+            context.Add(mercadoria);
+            await context.SaveChangesAsync();
 
             var mercadoriaAtualizadoDTO = new MercadoriaDTO
             {
                 Descricao = "Teste-1",
                 Fabricante = "Teste2-1",
                 Nome = "Teste3-1",
-                TipoMercadoriaId = 2
+                TipoMercadoriaId = 1 // Alterado para um tipo existente
             };
-
-            context.Add(mercadoria);
-            await context.SaveChangesAsync();
 
             // Act
             var result = await mercadoriaService.Update(1, mercadoriaAtualizadoDTO);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(1, result.Id);
-            Assert.Equal("Teste-1", result.Descricao);
-
+            result.Should().NotBeNull();
+            result.Id.Should().Be(1);
+            result.Descricao.Should().Be("Teste-1");
         }
 
         [Fact]
-        public async Task MercadoriaService_GetById_Return_mercadoriaEncontrada()
+        public async Task MercadoriaService_GetById_ReturnsMercadoria()
         {
             // Arrange
-
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
             var tipoService = new TipoMercadoriaService(context);
             var mercadoriaService = new MercadoriaService(context, tipoService);
 
+            var tipo = new TipoMercadoria()
+            {
+                Id = 1,
+                Tipo = "Eletrônico"
+            };
+            context.Add(tipo);
+            await context.SaveChangesAsync();
 
-            var mercadoriaDTO = new Mercadoria
+            var mercadoria = new Mercadoria
             {
                 Id = 1,
                 Descricao = "Teste",
@@ -156,16 +161,16 @@ namespace MStarTeste.ServiceTeste
                 TipoMercadoriaId = 1,
                 DataCriacao = DateTime.Now
             };
-            context.Mercadoria.Add(mercadoriaDTO);
+            context.Add(mercadoria);
             await context.SaveChangesAsync();
 
             // Act
-            var result = await mercadoriaService.GetById(mercadoriaDTO.Id);
+            var result = await mercadoriaService.GetById(mercadoria.Id);
 
             // Assert
+            result.Should().NotBeNull();
             result.Id.Should().Be(1);
-            mercadoriaDTO.Id.Should().Be(result.Id);
-            mercadoriaDTO.Fabricante.Should().Be("Teste2");
+            result.Fabricante.Should().Be("Teste2");
         }
 
         [Fact]
@@ -176,7 +181,15 @@ namespace MStarTeste.ServiceTeste
             var tipoService = new TipoMercadoriaService(context);
             var mercadoriaService = new MercadoriaService(context, tipoService);
 
-            var mercadoria = new List<Mercadoria>
+            var tipo = new TipoMercadoria()
+            {
+                Id = 1,
+                Tipo = "Eletrônico"
+            };
+            context.Add(tipo);
+            await context.SaveChangesAsync();
+
+            var mercadorias = new List<Mercadoria>
             {
                 new Mercadoria
                 {
@@ -193,19 +206,19 @@ namespace MStarTeste.ServiceTeste
                     Descricao = "Desc",
                     Fabricante = "Fab",
                     Nome = "Nom",
-                    TipoMercadoriaId = 2,
+                    TipoMercadoriaId = 1,
                     DataCriacao = DateTime.Now
                 },
             };
-            context.Mercadoria.AddRange(mercadoria);
+            context.AddRange(mercadorias);
             await context.SaveChangesAsync();
+
             // Act
             var result = await mercadoriaService.GetAll();
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(2, result.Count);
-        }
 
+            // Assert
+            result.Should().NotBeNull();
+            result.Count.Should().Be(2);
+        }
     }
 }
-

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Select from '../form/Select'; // O componente Select que já criamos anteriormente
+import PDFButton from '../layout/PDFButton';
 
 function Movimentacao() {
     const [movimentacoes, setMovimentacoes] = useState([]);
@@ -115,7 +116,7 @@ function Movimentacao() {
                                     <Select
                                         text="Mercadoria"
                                         name="idMercadoria"
-                                        options={mercadorias.map(mercadoria => ({ id: mercadoria.id, name: mercadoria.nome }))} // Acessando o nome da mercadoria
+                                        options={mercadorias.map(mercadoria => ({ id: mercadoria.id, name: mercadoria.nome }))}
                                         handleOnChange={handleInputChange}
                                         value={newMovimentacao.idMercadoria}
                                     />
@@ -152,14 +153,17 @@ function Movimentacao() {
                                     <p>Quantidade: {movimentacao.quantidade}</p>
                                     <p>Local de Movimentação: {movimentacao.localMovimentacao}</p>
                                     <p>Tipo de Movimentação: {movimentacao.tipoMovimentacao === 'E' ? 'Entrada' : 'Saída'}</p>
+                                    <p>Data de Criação: {new Date(movimentacao.dataCriacao).toLocaleDateString()}</p>
                                     <button onClick={() => handleEdit(movimentacao)}>Editar</button>
                                     <button onClick={() => handleDelete(movimentacao.id)}>Deletar</button>
                                 </>
                             )}
                         </li>
+
                     );
                 })}
             </ul>
+            <PDFButton />
         </div>
     );
 }

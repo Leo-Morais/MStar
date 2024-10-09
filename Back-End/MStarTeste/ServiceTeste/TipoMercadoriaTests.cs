@@ -6,9 +6,8 @@ using MStar.Repository;
 using MStar.Service;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace MStarTeste.ServiceTeste
 {
@@ -30,58 +29,50 @@ namespace MStarTeste.ServiceTeste
         public async Task TipoMercadoriaService_Add_ReturnsSuccess()
         {
             // Arrange
-
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
             var tipoService = new TipoMercadoriaService(context);
-
 
             var tipoDTO = new TipoMercadoriaDTO
             {
                 Tipo = "Teste"
             };
-
 
             // Act
             var result = await tipoService.Add(tipoDTO);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(tipoDTO.Tipo, result.Tipo);
+            result.Should().NotBeNull();
+            result.Tipo.Should().Be(tipoDTO.Tipo);
         }
 
         [Fact]
-        public async Task TipoMercadoriaService_Delete()
+        public async Task TipoMercadoriaService_Delete_RemovesTipoMercadoria()
         {
             // Arrange
-
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
             var tipoService = new TipoMercadoriaService(context);
-
 
             var tipoDTO = new TipoMercadoriaDTO
             {
                 Tipo = "Teste"
             };
 
-
-            // Act
             var result = await tipoService.Add(tipoDTO);
             await context.SaveChangesAsync();
 
+            // Act
             await tipoService.Delete(result.Id);
             await context.SaveChangesAsync();
 
             // Assert
             var tipoMercadoria = await context.TipoMercadoria.ToListAsync();
-            Assert.DoesNotContain(tipoMercadoria, m => m.Tipo == result.Tipo);
+            tipoMercadoria.Should().NotContain(m => m.Tipo == result.Tipo);
         }
 
         [Fact]
-        public async Task TipoMercadoriaService_Update_ReturnTipo()
+        public async Task TipoMercadoriaService_Update_ReturnsUpdatedTipo()
         {
-
             // Arrange
-
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
             var tipoService = new TipoMercadoriaService(context);
 
@@ -89,7 +80,6 @@ namespace MStarTeste.ServiceTeste
             {
                 Id = 1,
                 Tipo = "Teste",
-                
             };
 
             var tipoAtualizadoDTO = new TipoMercadoriaDTO
@@ -104,14 +94,13 @@ namespace MStarTeste.ServiceTeste
             var result = await tipoService.Update(1, tipoAtualizadoDTO);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(1, result.Id);
-            Assert.Equal("Teste2", result.Tipo);
-
+            result.Should().NotBeNull();
+            result.Id.Should().Be(1);
+            result.Tipo.Should().Be("Teste2");
         }
 
         [Fact]
-        public async Task TipoMercadoriaService_GetById_ReturnTipo()
+        public async Task TipoMercadoriaService_GetById_ReturnsTipo()
         {
             // Arrange
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
@@ -129,9 +118,9 @@ namespace MStarTeste.ServiceTeste
             var result = await tipoService.GetById(tipoMercadoria.Id);
 
             // Assert
+            result.Should().NotBeNull();
             result.Id.Should().Be(1);
-            tipoMercadoria.Id.Should().Be(result.Id);
-            tipoMercadoria.Tipo.Should().Be("Eletronico");
+            result.Tipo.Should().Be("Eletronico");
         }
 
         [Fact]
@@ -156,13 +145,13 @@ namespace MStarTeste.ServiceTeste
             };
             context.TipoMercadoria.AddRange(tipoMercadoria);
             await context.SaveChangesAsync();
+
             // Act
             var result = await tipoService.GetAll();
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(2, result.Count);
-        }
 
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().HaveCount(2);
+        }
     }
 }
-

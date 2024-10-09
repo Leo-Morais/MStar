@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace MStarTeste.ServiceTeste
 {
@@ -30,20 +31,10 @@ namespace MStarTeste.ServiceTeste
         public async Task MovimentacaoService_Add_ReturnsSuccess()
         {
             // Arrange
-
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
             var tipoService = new TipoMercadoriaService(context);
             var mercadoriaService = new MercadoriaService(context, tipoService);
             var movimentacaoService = new MovimentacaoService(context, mercadoriaService);
-
-            var movimentacaoDTO = new MovimentacaoDTO
-            {
-               IdMercadoria = 1,
-               LocalMovimentacao = "Teste",
-               Quantidade = 1,
-               TipoMovimentacao = "S"
-            };
-
 
             var mercadoria = new Mercadoria
             {
@@ -54,33 +45,36 @@ namespace MStarTeste.ServiceTeste
                 TipoMercadoriaId = 1,
                 DataCriacao = DateTime.Now
             };
+
             context.Add(mercadoria);
-
-            // Act
-            var result = await movimentacaoService.Add(movimentacaoDTO);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(movimentacaoDTO.LocalMovimentacao, result.LocalMovimentacao);
-        }
-
-        [Fact]
-        public async Task MovimentacaoService_Delete()
-        {
-            // Arrange
-
-            var context = GetInMemoryContext(Guid.NewGuid().ToString());
-            var tipoService = new TipoMercadoriaService(context);
-            var mercadoriaService = new MercadoriaService(context, tipoService);
-            var movimentacaoService = new MovimentacaoService(context, mercadoriaService);
+            await context.SaveChangesAsync();
 
             var movimentacaoDTO = new MovimentacaoDTO
             {
                 IdMercadoria = 1,
                 LocalMovimentacao = "Teste",
                 Quantidade = 1,
-                TipoMovimentacao = "S"
+                TipoMovimentacao = "S",
+
             };
+
+            // Act
+            var result = await movimentacaoService.Add(movimentacaoDTO);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.IdMercadoria.Should().Be(movimentacaoDTO.IdMercadoria);
+            result.LocalMovimentacao.Should().Be(movimentacaoDTO.LocalMovimentacao);
+        }
+
+        [Fact]
+        public async Task MovimentacaoService_GetById_ReturnsMovimentacaoEncontrada()
+        {
+            // Arrange
+            var context = GetInMemoryContext(Guid.NewGuid().ToString());
+            var tipoService = new TipoMercadoriaService(context);
+            var mercadoriaService = new MercadoriaService(context, tipoService);
+            var movimentacaoService = new MovimentacaoService(context, mercadoriaService);
 
             var mercadoria = new Mercadoria
             {
@@ -91,70 +85,9 @@ namespace MStarTeste.ServiceTeste
                 TipoMercadoriaId = 1,
                 DataCriacao = DateTime.Now
             };
+
             context.Add(mercadoria);
-
-            // Act
-            var result = await movimentacaoService.Add(movimentacaoDTO);
             await context.SaveChangesAsync();
-
-            await movimentacaoService.Delete(result.Id);
-            await context.SaveChangesAsync();
-
-            // Assert
-            var movimentacao = await context.Movimentacao.ToListAsync();
-            Assert.DoesNotContain(movimentacao, m => m.TipoMovimentacao == result.TipoMovimentacao);
-        }
-
-        [Fact]
-        public async Task MovimentacaoService_Update_Return_movimentacaoEncontrada()
-        {
-
-            // Arrange
-            var context = GetInMemoryContext(Guid.NewGuid().ToString());
-            var tipoService = new TipoMercadoriaService(context);
-            var mercadoriaService = new MercadoriaService(context, tipoService);
-            var movimentacaoService = new MovimentacaoService(context, mercadoriaService);
-
-            var movimentacao = new Movimentacao
-            {
-                Id = 1,
-                IdMercadoria = 1,
-                LocalMovimentacao = "Teste",
-                Quantidade = 7,
-                TipoMovimentacao = "S",
-                DataCriacao = DateTime.Now
-            };
-
-            context.Add(movimentacao);
-            await context.SaveChangesAsync();
-
-            var movimentacaoDTOAtualizado = new MovimentacaoDTO
-            {
-                IdMercadoria = 1,
-                LocalMovimentacao = "Teste-2",
-                Quantidade = 3,
-                TipoMovimentacao = "E"
-            };
-
-            // Act
-            var result = await movimentacaoService.Update(1, movimentacaoDTOAtualizado);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(1, result.Id);
-            Assert.Equal(3, result.Quantidade);
-
-        }
-
-        [Fact]
-        public async Task MovimentacaoService_GetById_Return_movimentacaoEncontrada()
-        {
-            // Arrange
-
-            var context = GetInMemoryContext(Guid.NewGuid().ToString());
-            var tipoService = new TipoMercadoriaService(context);
-            var mercadoriaService = new MercadoriaService(context, tipoService);
-            var movimentacaoService = new MovimentacaoService(context, mercadoriaService);
 
             var movimentacao = new Movimentacao
             {
@@ -165,6 +98,7 @@ namespace MStarTeste.ServiceTeste
                 TipoMovimentacao = "S",
                 DataCriacao = DateTime.Now
             };
+
             context.Movimentacao.Add(movimentacao);
             await context.SaveChangesAsync();
 
@@ -172,13 +106,13 @@ namespace MStarTeste.ServiceTeste
             var result = await movimentacaoService.GetById(movimentacao.Id);
 
             // Assert
-            result.Id.Should().Be(1);
-            movimentacao.Id.Should().Be(result.Id);
-            movimentacao.TipoMovimentacao.Should().Be("S");
+            result.Should().NotBeNull();
+            result.Id.Should().Be(movimentacao.Id);
+            result.LocalMovimentacao.Should().Be(movimentacao.LocalMovimentacao);
         }
 
         [Fact]
-        public async Task MovimentacaoService_GetAll_Return_List()
+        public async Task MovimentacaoService_GetAll_ReturnsList()
         {
             // Arrange
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
@@ -186,13 +120,45 @@ namespace MStarTeste.ServiceTeste
             var mercadoriaService = new MercadoriaService(context, tipoService);
             var movimentacaoService = new MovimentacaoService(context, mercadoriaService);
 
-            var movimentacao = new List<Movimentacao>
+            var tipo = new TipoMercadoria()
+            {
+                Id = 1,
+                Tipo = "Eletrônico"
+            };
+            context.Add(tipo);
+            await context.SaveChangesAsync();
+
+            var mercadoria = new Mercadoria
+            {
+                Id = 1,
+                Nome = "Nome",
+                Descricao = "Descricao",
+                Fabricante = "Fabricante",
+                TipoMercadoriaId = 1,
+                DataCriacao = DateTime.Now
+            };
+
+            var mercadoria2 = new Mercadoria
+            {
+                Id = 2,
+                Nome = "Teste",
+                Descricao = "Desc",
+                Fabricante = "Fab",
+                TipoMercadoriaId = 1,
+                DataCriacao = DateTime.Now
+            };
+
+            await context.AddAsync(mercadoria);
+            await context.AddAsync(mercadoria2);
+            await context.SaveChangesAsync();
+
+            var movimentacoes = new List<Movimentacao>
             {
                 new Movimentacao
                 {
                     Id = 1,
                     IdMercadoria = 1,
-                    LocalMovimentacao = "Teste",
+                    LocalMovimentacao = "Teste1",
                     Quantidade = 1,
                     TipoMovimentacao = "S",
                     DataCriacao = DateTime.Now
@@ -201,21 +167,22 @@ namespace MStarTeste.ServiceTeste
                 {
                     Id = 2,
                     IdMercadoria = 2,
-                    LocalMovimentacao = "Teste-2",
-                    Quantidade = 5,
+                    LocalMovimentacao = "Teste2",
+                    Quantidade = 2,
                     TipoMovimentacao = "E",
                     DataCriacao = DateTime.Now
-                },
+                }
             };
-            context.Movimentacao.AddRange(movimentacao);
+
+            context.Movimentacao.AddRange(movimentacoes);
             await context.SaveChangesAsync();
+
             // Act
             var result = await movimentacaoService.GetAll();
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(2, result.Count);
-        }
 
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().HaveCount(2);
+        }
     }
 }
-

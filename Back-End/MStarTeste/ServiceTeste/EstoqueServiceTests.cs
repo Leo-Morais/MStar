@@ -6,9 +6,8 @@ using MStar.Repository;
 using MStar.Service;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace MStarTeste.ServiceTeste
 {
@@ -30,13 +29,12 @@ namespace MStarTeste.ServiceTeste
         public async Task EstoqueService_Add_ReturnsSuccess()
         {
             // Arrange
-
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
             var tipoService = new TipoMercadoriaService(context);
             var mercadoriaService = new MercadoriaService(context, tipoService);
             var estoqueService = new EstoqueService(context, mercadoriaService);
 
-            var mercadoria = new Mercadoria()
+            var mercadoria = new Mercadoria
             {
                 Id = 1,
                 Descricao = "Teste",
@@ -46,32 +44,33 @@ namespace MStarTeste.ServiceTeste
                 DataCriacao = DateTime.Now
             };
             context.Add(mercadoria);
+            await context.SaveChangesAsync(); // Salvar a mercadoria antes de adicionar o estoque
 
             var estoqueDTO = new EstoqueDTO
             {
-                Quantidade = 1
+                Quantidade = 1,
+                IdMercadoria = 1 // Definir o IdMercadoria para associar corretamente
             };
 
-
             // Act
-            var result = await estoqueService.Add(1,estoqueDTO);
+            var result = await estoqueService.Add(estoqueDTO);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(estoqueDTO.Quantidade, result.Quantidade);
+            result.Should().NotBeNull();
+            result.Quantidade.Should().Be(estoqueDTO.Quantidade);
+            result.IdMercadoria.Should().Be(estoqueDTO.IdMercadoria);
         }
 
         [Fact]
-        public async Task EstoqueService_Delete()
+        public async Task EstoqueService_Delete_Success()
         {
             // Arrange
-
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
             var tipoService = new TipoMercadoriaService(context);
             var mercadoriaService = new MercadoriaService(context, tipoService);
             var estoqueService = new EstoqueService(context, mercadoriaService);
 
-            var mercadoria = new Mercadoria()
+            var mercadoria = new Mercadoria
             {
                 Id = 1,
                 Descricao = "Teste",
@@ -81,93 +80,111 @@ namespace MStarTeste.ServiceTeste
                 DataCriacao = DateTime.Now
             };
             context.Add(mercadoria);
+            await context.SaveChangesAsync();
 
             var estoqueDTO = new EstoqueDTO
             {
-                Quantidade = 1
+                Quantidade = 1,
+                IdMercadoria = 1
             };
-
+            var estoque = await estoqueService.Add(estoqueDTO);
 
             // Act
-            var result = await estoqueService.Add(1,estoqueDTO);
-            await context.SaveChangesAsync();
-
-            await estoqueService.Delete(result.Id);
-            await context.SaveChangesAsync();
+            await estoqueService.Delete(estoque.Id);
 
             // Assert
-            var estoque = await context.Estoque.ToListAsync();
-            Assert.DoesNotContain(estoque, m => m.Quantidade == result.Quantidade);
+            var estoqueList = await context.Estoque.ToListAsync();
+            estoqueList.Should().NotContain(m => m.Id == estoque.Id);
         }
 
         [Fact]
-        public async Task EstoqueService_Update_Return_estoqueEncontrado()
+        public async Task EstoqueService_Update_ReturnsUpdatedEstoque()
         {
-
             // Arrange
-
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
             var tipoService = new TipoMercadoriaService(context);
             var mercadoriaService = new MercadoriaService(context, tipoService);
             var estoqueService = new EstoqueService(context, mercadoriaService);
+
+            var mercadoria = new Mercadoria
+            {
+                Id = 1,
+                Descricao = "Teste",
+                Fabricante = "Teste2",
+                Nome = "Teste3",
+                TipoMercadoriaId = 1,
+                DataCriacao = DateTime.Now
+            };
+            context.Add(mercadoria);
+            await context.SaveChangesAsync();
 
             var estoque = new Estoque
             {
+                Id = 1, // Defina o ID aqui para simular uma entidade existente
                 Quantidade = 1,
                 DataAtualizacao = DateTime.Now,
-                IdMercadoria = 1 
+                IdMercadoria = 1
             };
-
             context.Add(estoque);
+            await context.SaveChangesAsync();
 
             var estoqueDTOAtualizado = new EstoqueDTO
             {
-                Quantidade = 2
+                Quantidade = 2,
+                IdMercadoria = 1
             };
 
-            await context.SaveChangesAsync();
-
             // Act
-            var result = await estoqueService.Update(1, estoqueDTOAtualizado);
+            var result = await estoqueService.Update(estoque.Id, estoqueDTOAtualizado);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(1, result.Id);
-            Assert.Equal(2, result.Quantidade);
-
+            result.Should().NotBeNull();
+            result.Quantidade.Should().Be(2);
+            result.IdMercadoria.Should().Be(estoqueDTOAtualizado.IdMercadoria);
         }
 
         [Fact]
-        public async Task EstoqueService_GetById_Return_estoqueEncontrado()
+        public async Task EstoqueService_GetById_ReturnsEstoque()
         {
             // Arrange
-
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
             var tipoService = new TipoMercadoriaService(context);
             var mercadoriaService = new MercadoriaService(context, tipoService);
             var estoqueService = new EstoqueService(context, mercadoriaService);
+
+            var mercadoria = new Mercadoria
+            {
+                Id = 1,
+                Descricao = "Teste",
+                Fabricante = "Teste2",
+                Nome = "Teste3",
+                TipoMercadoriaId = 1,
+                DataCriacao = DateTime.Now
+            };
+            context.Add(mercadoria);
+            await context.SaveChangesAsync();
 
             var estoque = new Estoque
             {
                 Id = 1,
                 Quantidade = 1,
                 DataAtualizacao = DateTime.Now,
-                IdMercadoria = 1,
+                IdMercadoria = 1
             };
-            context.Estoque.Add(estoque);
+            context.Add(estoque);
             await context.SaveChangesAsync();
 
             // Act
             var result = await estoqueService.GetById(estoque.Id);
 
             // Assert
-            result.Id.Should().Be(1);
-            estoque.Id.Should().Be(result.Id);
-            estoque.Quantidade.Should().Be(1);
+            result.Should().NotBeNull();
+            result.Id.Should().Be(estoque.Id);
+            result.Quantidade.Should().Be(estoque.Quantidade);
         }
 
         [Fact]
-        public async Task EstoqueService_GetAll_Return_List()
+        public async Task EstoqueService_GetAll_ReturnsList()
         {
             // Arrange
             var context = GetInMemoryContext(Guid.NewGuid().ToString());
@@ -175,7 +192,27 @@ namespace MStarTeste.ServiceTeste
             var mercadoriaService = new MercadoriaService(context, tipoService);
             var estoqueService = new EstoqueService(context, mercadoriaService);
 
-            var estoque = new List<Estoque>
+            var tipo = new TipoMercadoria()
+            {
+                Id = 1,
+                Tipo = "Eletrônico"
+            };
+            context.Add(tipo);
+            await context.SaveChangesAsync();
+
+            var mercadoria = new Mercadoria
+            {
+                Id = 1,
+                Descricao = "Teste",
+                Fabricante = "Teste2",
+                Nome = "Teste3",
+                TipoMercadoriaId = 1,
+                DataCriacao = DateTime.Now
+            };
+            context.Add(mercadoria);
+            await context.SaveChangesAsync();
+
+            var estoqueList = new List<Estoque>
             {
                 new Estoque
                 {
@@ -189,18 +226,18 @@ namespace MStarTeste.ServiceTeste
                     Id = 2,
                     Quantidade = 15,
                     DataAtualizacao = DateTime.Now,
-                    IdMercadoria = 3,
+                    IdMercadoria = 1,
                 },
             };
-            context.Estoque.AddRange(estoque);
+            context.AddRange(estoqueList);
             await context.SaveChangesAsync();
+
             // Act
             var result = await estoqueService.GetAll();
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(2, result.Count);
-        }
 
+            // Assert
+            result.Should().NotBeNull();
+            result.Count.Should().Be(2);
+        }
     }
 }
-

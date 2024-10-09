@@ -13,6 +13,7 @@ import Movimentacao from './components/pages/Movimentacao';
 import MercadoriaCadastro from './components/pages/MercadoriaCadastro';
 import MovimentacaoCadastro from './components/pages/MovimentacaoCadastro';
 import EstoqueCadastro from './components/pages/EstoqueCadastro';
+import MovimentacaoGrafico from './components/pages/MovimentacaoGrafico';
 
 
 
@@ -32,6 +33,7 @@ function App() {
           <Route path='/mercadoriaCadastro' element={<MercadoriaCadastro />} />
           <Route path='/movimentacaoCadastro' element={<MovimentacaoCadastro />} />
           <Route path='/estoqueCadastro' element={<EstoqueCadastro />} />
+          <Route path='/movimentacaoGrafico' element={<MovimentacaoGrafico />} />
         </Routes>
       </Container>
       <Footer />    

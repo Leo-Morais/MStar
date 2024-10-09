@@ -12,6 +12,7 @@ function Home(){
                 <LinkButton to="/mercadoriaCadastro" text="Mercadoria"/>
                 <LinkButton to="/estoqueCadastro" text="Estoque"/>
                 <LinkButton to="/movimentacaoCadastro" text="Movimentação"/>
+                <LinkButton to="/movimentacaoGrafico" text="Grafico de Movimentação"/>
             </div>
         </section>
     )
