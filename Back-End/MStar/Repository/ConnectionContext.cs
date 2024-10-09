@@ -46,11 +46,9 @@ namespace MStar.Repository
             modelBuilder.Entity<Movimentacao>().Property(x => x.TipoMovimentacao).HasColumnName("TipoMovimentacao");
             modelBuilder.Entity<Movimentacao>().Property(x => x.DataCriacao).HasColumnName("DataCriacao");
             modelBuilder.Entity<Movimentacao>().Property(x => x.IdMercadoria).HasColumnName("IdMercadoria");
-            modelBuilder.Entity<Movimentacao>()
-    .HasOne(x => x.Mercadoria)
-    .WithMany() // Assume que uma Mercadoria pode ter várias Movimentações
-    .HasForeignKey(x => x.IdMercadoria) // Aqui você especifica a FK
-    .OnDelete(DeleteBehavior.ClientNoAction);
+            modelBuilder.Entity<Movimentacao>().HasOne(x => x.Mercadoria).WithMany()
+            .HasForeignKey(x => x.IdMercadoria)
+            .OnDelete(DeleteBehavior.ClientNoAction);
             modelBuilder.Entity<Movimentacao>().Navigation(x => x.Mercadoria).AutoInclude();
 
 
@@ -60,9 +58,9 @@ namespace MStar.Repository
             modelBuilder.Entity<Estoque>().ToTable("Estoque");
             modelBuilder.Entity<Estoque>().Property(x => x.Quantidade).HasColumnName("Quantidade");
             modelBuilder.Entity<Estoque>().Property(x => x.DataAtualizacao).HasColumnName("DataAtualizacao");
-            modelBuilder.Entity<Estoque>().HasOne(x => x.Mercadoria).WithOne()
-                .HasForeignKey<Mercadoria>(x => x.Id).HasPrincipalKey<Estoque>(c => c.IdMercadoria)
-                .OnDelete(DeleteBehavior.ClientNoAction);
+            modelBuilder.Entity<Estoque>().HasOne(x => x.Mercadoria).WithMany()
+            .HasForeignKey(x => x.IdMercadoria)
+            .OnDelete(DeleteBehavior.ClientNoAction);
             modelBuilder.Entity<Estoque>().Navigation(x => x.Mercadoria).AutoInclude();
         }
     }

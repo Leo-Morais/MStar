@@ -12,6 +12,7 @@ import Footer from './components/layout/Footer';
 import Movimentacao from './components/pages/Movimentacao';
 import MercadoriaCadastro from './components/pages/MercadoriaCadastro';
 import MovimentacaoCadastro from './components/pages/MovimentacaoCadastro';
+import EstoqueCadastro from './components/pages/EstoqueCadastro';
 
 
 
@@ -30,6 +31,7 @@ function App() {
           <Route path='/tipoMercadoriaCadastro' element={<TipoMercadoriaCadastro />} />
           <Route path='/mercadoriaCadastro' element={<MercadoriaCadastro />} />
           <Route path='/movimentacaoCadastro' element={<MovimentacaoCadastro />} />
+          <Route path='/estoqueCadastro' element={<EstoqueCadastro />} />
         </Routes>
       </Container>
       <Footer />    

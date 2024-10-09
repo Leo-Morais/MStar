@@ -17,9 +17,9 @@ namespace MStar.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddAsync(int id, EstoqueDTO estoqueDTO)
+        public async Task<IActionResult> AddAsync(EstoqueDTO estoqueDTO)
         {
-            var estoque = await _estoqueService.Add(id, estoqueDTO);
+            var estoque = await _estoqueService.Add(estoqueDTO);
             return Ok(estoque);
         }
 

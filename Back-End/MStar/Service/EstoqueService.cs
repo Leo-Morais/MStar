@@ -17,10 +17,11 @@ namespace MStar.Service
             _mercadoriaService = mercadoriaService;
         }
 
-        public async Task<Estoque> Add(int id, EstoqueDTO estoqueDTO)
+        public async Task<Estoque> Add(EstoqueDTO estoqueDTO)
         {
-            var mercadoriaEncontrada = await _mercadoriaService.GetById(id);
-            var estoque = new Estoque() { 
+            var mercadoriaEncontrada = await _mercadoriaService.GetById(estoqueDTO.IdMercadoria);
+            var estoque = new Estoque()
+            {
                 Quantidade = estoqueDTO.Quantidade,
                 DataAtualizacao = DateTime.Now,
                 IdMercadoria = mercadoriaEncontrada.Id
@@ -76,6 +77,12 @@ namespace MStar.Service
 
             estoqueEcontrado.Quantidade = estoqueDTO.Quantidade;
             estoqueEcontrado.DataAtualizacao = DateTime.Now;
+
+            if (estoqueDTO.IdMercadoria > 0)
+            {
+                estoqueEcontrado.IdMercadoria = estoqueDTO.IdMercadoria;
+            }
+
             await _context.SaveChangesAsync();
             return estoqueEcontrado;
         }

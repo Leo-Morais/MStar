@@ -79,19 +79,17 @@ namespace MStar.Service
                 throw new IdNotFoundException($"Movimentação com o Id:{id} não encontrada.");
             }
 
-            // Atualizando os campos da movimentação
             movimentacaoEncontrada.TipoMovimentacao = movimentacaoDTO.TipoMovimentacao;
             movimentacaoEncontrada.LocalMovimentacao = movimentacaoDTO.LocalMovimentacao;
             movimentacaoEncontrada.Quantidade = movimentacaoDTO.Quantidade;
 
-            // Verificando se a mercadoria existe antes de atualizar a FK
+
             var mercadoria = await _mercadoriaService.GetById(movimentacaoDTO.IdMercadoria);
             if (mercadoria == null)
             {
                 throw new IdNotFoundException($"Mercadoria com o Id: {movimentacaoDTO.IdMercadoria} não encontrada.");
             }
 
-            // Atualizando a FK
             movimentacaoEncontrada.IdMercadoria = movimentacaoDTO.IdMercadoria;
 
             await _context.SaveChangesAsync();

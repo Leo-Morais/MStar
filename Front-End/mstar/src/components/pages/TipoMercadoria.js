@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 
 function TipoMercadoria() {
-    const [tipos, setTipos] = useState([]); // Para armazenar a lista de tipos de mercadoria
-    const [editTipo, setEditTipo] = useState(null); // Para armazenar o tipo que está sendo editado
-    const [newTipo, setNewTipo] = useState(''); // Para o valor atualizado do tipo
+    const [tipos, setTipos] = useState([]);
+    const [editTipo, setEditTipo] = useState(null);
+    const [newTipo, setNewTipo] = useState('');
 
-    // Função para buscar os tipos de mercadoria
     useEffect(() => {
         fetch("https://localhost:7116/api/v1/TipoMercadoria", {
             method: "GET",
@@ -18,7 +17,6 @@ function TipoMercadoria() {
         .catch(err => console.log('Erro ao buscar tipos de mercadoria:', err));
     }, []);
 
-    // Função para deletar um tipo de mercadoria
     const handleDelete = (id) => {
         const confirmDelete = window.confirm("Tem certeza que deseja deletar este tipo de mercadoria?");
         if (!confirmDelete) return;
@@ -35,13 +33,11 @@ function TipoMercadoria() {
         .catch(err => console.log('Erro ao deletar tipo de mercadoria:', err));
     };
 
-    // Função para começar a editar um tipo de mercadoria
     const handleEdit = (tipo) => {
         setEditTipo(tipo);
         setNewTipo(tipo.tipo);
     };
 
-    // Função para salvar a atualização do tipo de mercadoria
     const handleUpdate = (e) => {
         e.preventDefault();
         if (!newTipo) {
@@ -60,17 +56,16 @@ function TipoMercadoria() {
         })
         .then(resp => resp.json())
         .then(data => {
-            // Atualizar o tipo na lista
             setTipos(tipos.map(tipo => tipo.id === editTipo.id ? data : tipo));
             setEditTipo(null);
-            setNewTipo(''); // Limpa o campo após atualização
+            setNewTipo('');
         })
         .catch(err => console.log('Erro ao atualizar tipo de mercadoria:', err));
     };
 
     return (
         <div>
-            <h1>Tipo de Mercadoria</h1>
+            <h1>Tipos de Mercadoria</h1>
 
             <ul>
                 {tipos.map(tipo => (
@@ -88,11 +83,13 @@ function TipoMercadoria() {
                                 <button type="button" onClick={() => setEditTipo(null)}>Cancelar</button>
                             </form>
                         ) : (
-                            <>
-                                {tipo.tipo}
-                                <button onClick={() => handleEdit(tipo)}>Editar</button>
-                                <button onClick={() => handleDelete(tipo.id)}>Deletar</button>
-                            </>
+                            <div>
+                                <span>{tipo.tipo}</span>
+                                <div>
+                                    <button onClick={() => handleEdit(tipo)}>Editar</button>
+                                    <button onClick={() => handleDelete(tipo.id)}>Deletar</button>
+                                </div>
+                            </div>
                         )}
                     </li>
                 ))}
